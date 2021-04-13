@@ -3,7 +3,9 @@ import { setAuthData } from '../redux/actions/auth';
 import { getCompaniesList } from '../redux/actions/getCompaniesList';
 
 const apiUrl = 'http://test-alpha.reestrdoma.ru/api/';
-export let accessToken = "";
+var accessToken = localStorage.getItem('token');
+
+console.log('accessToken', typeof accessToken);
 
 const authRequest = axios.create({
     baseURL: apiUrl
@@ -24,7 +26,9 @@ export const authAPI = {
 export const login = ({username, password}) => async (dispatch) => {
     const response = await authAPI.login(username, password);
 
-    accessToken = response.data.data.token.access;
+    accessToken = response.data.data.token.access + ' ' + response.data.data.token.refresh;
+    localStorage.setItem('token', accessToken);
+
     let isAccess = false;
     if (accessToken !== '') {
         isAccess = true;
@@ -48,6 +52,4 @@ export const getCompaniesListThunk = () => async (dispatch) => {
     const response = await getCompaniesListAPI.getCompaniesList();
 
     dispatch(getCompaniesList(response));
-
-    console.log('API/response', response);
 };
