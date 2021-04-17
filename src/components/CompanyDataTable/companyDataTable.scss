@@ -1,0 +1,35 @@
+.wrapper {
+
+    table {
+        width: 100%;
+        display: table;
+        border-collapse: collapse;
+        border-spacing: 0;
+        text-align: center;
+        margin-bottom: 50px;
+    
+        thead {
+            box-sizing: inherit;
+    
+            tr {
+                border-bottom: 1px solid rgba(0,0,0,.12);
+    
+                th {
+                    padding: 20px 10px;
+                    width: 25%;
+                }
+            }
+        }
+    
+        tbody {
+            tr {
+                border-bottom: 1px solid rgba(0,0,0,.12);
+    
+                td {
+                    padding: 20px 10px;
+                    width: 25%;
+                }
+            }
+        }
+    }
+}

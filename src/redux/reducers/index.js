@@ -1,10 +1,14 @@
 import {combineReducers} from "redux";
-import getCompaniesList from './getCompaniesList';
+
 import auth from './auth';
+import getCompaniesList from './getCompaniesList';
+import getCompanyData from './getCompanyData';
+
 
 const rootReducer = combineReducers({
+    auth,
     getCompaniesList,
-    auth
+    getCompanyData
 });
 
 export default rootReducer;

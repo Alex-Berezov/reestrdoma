@@ -1,22 +1,27 @@
 import axios from 'axios';
 import { setAuthData } from '../redux/actions/auth';
 import { getCompaniesList } from '../redux/actions/getCompaniesList';
+import { getCompanyData } from '../redux/actions/getCompanyData';
 
 const apiUrl = 'http://test-alpha.reestrdoma.ru/api/';
-var accessToken = localStorage.getItem('token');
-
-console.log('accessToken', typeof accessToken);
+var token = localStorage.getItem('accessToken');
 
 const authRequest = axios.create({
     baseURL: apiUrl
 });
 
 const requestWithToken = axios.create({
-    baseURL: apiUrl,
-    headers: {
-        Authorization: `Bearer ${accessToken}`
-    }
+    baseURL: apiUrl
 });
+requestWithToken.interceptors.request.use(
+    config => {
+        config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+)
 
 export const authAPI = {
     login(username, password) {
@@ -26,8 +31,7 @@ export const authAPI = {
 export const login = ({username, password}) => async (dispatch) => {
     const response = await authAPI.login(username, password);
 
-    accessToken = response.data.data.token.access + ' ' + response.data.data.token.refresh;
-    localStorage.setItem('token', accessToken);
+    let accessToken = localStorage.setItem('accessToken', response.data.data.token.access);
 
     let isAccess = false;
     if (accessToken !== '') {
@@ -53,3 +57,18 @@ export const getCompaniesListThunk = () => async (dispatch) => {
 
     dispatch(getCompaniesList(response));
 };
+
+
+export const getCompanyDataAPI = {
+    getCompanyData(company_id, page, perPage) {
+        return requestWithToken.get(`reestrdoma/company/houses/${company_id}/?page=${page}&perPage=${perPage}`);
+    }
+};
+export const getCompanyDataThunk = (company_id, page, perPage) => async (dispatch) => {
+    const response = await getCompanyDataAPI.getCompanyData(company_id, page, perPage);
+
+    const resData = response.data.data;
+    const totalHousesCount = response.data.links.objectsCount;
+
+    dispatch(getCompanyData({resData, totalHousesCount}));
+}

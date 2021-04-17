@@ -9,7 +9,7 @@ const getCompaniesList = (state = initialState, action) => {
         case GET_COMPANIES_LIST:
             return {
                 ...state,
-                companiesList: action.companies
+                companiesList: action.companies.data.data
             }
     
         default:

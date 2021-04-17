@@ -1,0 +1,40 @@
+nav {
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+
+      .arrows {
+        cursor: pointer;
+        margin-top: 20px;
+        padding: 10px;
+      }
+
+      li {
+        list-style: none;
+        cursor: pointer;
+        margin-top: 30px;
+
+        &:hover {
+          span {
+            background: #00c8ff;
+            color: #030b33;
+          }
+        }
+
+        span {
+          text-decoration: none;
+          padding: 10px;
+          color: #00c8ff;
+        }
+        &:not(:last-child) a {
+          border-right: none;
+        }
+
+        .active {
+          background: #00c8ff;
+          color: #030b33;
+        }
+      }
+    }
+  }

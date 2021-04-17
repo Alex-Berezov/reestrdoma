@@ -1,52 +1,70 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { getCompaniesListThunk } from '../../api/api';
+import { getCompaniesListThunk, getCompanyDataThunk } from '../../api/api';
+import { setCompatyId, setPageNumber } from '../../redux/actions/getCompanyData';
+import CompaniesSelect from '../CompaniesSelect/CompaniesSelect';
+import CompanyDataTable from '../CompanyDataTable/CompanyDataTable';
+import Pagination from '../Pagination/Pagination';
 import './housesList.scss';
 
 const HousesList = () => {
     const dispatch = useDispatch();
-    const companiesList = useSelector(({ getCompaniesList }) => getCompaniesList.companiesList);
 
+    //Select list
+    const companiesList = useSelector(({ getCompaniesList }) => getCompaniesList.companiesList);
     useEffect(() => {
       dispatch(getCompaniesListThunk());
     }, []);
 
+    //Company data
+    const {
+        companyData,
+        companyId,
+        pageNumber,
+        rowsPerPage
+    } = useSelector(({ getCompanyData }) => getCompanyData);
+    
+    useEffect(() => {
+        dispatch(getCompanyDataThunk(companyId, pageNumber, rowsPerPage));
+    }, [pageNumber]);
+
+    const handleSelectedCompany = (e) => {
+        let company_id = e.target.value;
+        dispatch(setCompatyId(company_id));
+        dispatch(getCompanyDataThunk(company_id, pageNumber, rowsPerPage));
+        dispatch(setPageNumber(1));
+    };
+
+    //Pagination
+    const totalHousesCount = useSelector(({ getCompanyData }) => 
+        getCompanyData.totalHousesCount
+    );
+    
+    const paginate = (pageNumber) => {
+        dispatch(setPageNumber(pageNumber));
+    };
+
     return (
         <article className="housesList">
             <div className="wrapper">
-                <select>
-                    {
-                        companiesList &&
-                            companiesList.map(company => {
-                                return <option 
-                                    key={company.company_id}
-                                    value={company.name}>
-                                    {company.name}
-                                </option>
-                            })
-                    }
-                </select>
+                <CompaniesSelect 
+                    handleSelectedCompany={handleSelectedCompany} 
+                    companiesList={companiesList} 
+                />
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Адрес</th>
-                            <th>Кол-во квартир</th>
-                            <th>Дата добавления</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Some 1</td>
-                            <td>Some 2</td>
-                            <td>Some 3</td>
-                            <td>Some 3</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <CompanyDataTable companyData={companyData} />
+                
+                {
+                    totalHousesCount > 10 &&
+                    <Pagination 
+                        totalHousesCount={totalHousesCount}
+                        rowsPerPage={rowsPerPage}
+                        currentPage={pageNumber}
+                        paginate={paginate}
+                    />
+                }
+                
             </div>
         </article>
     );
